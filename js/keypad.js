@@ -54,9 +54,9 @@ function initKeypad() {
     <button class="btn" onclick="solveKeypad()">解决</button>
     <div id="keypadResult" class="result" style="display: none;"></div>
   `;
-  renderKeypadTable();
+  selectedKeypadSymbols = []; // 重置已选符号
+  renderKeypadTable(); // 重新渲染图片，清除高亮
   Utils.hideResult("keypadResult");
-  selectedKeypadSymbols = [];
 }
 
 function renderKeypadTable() {
