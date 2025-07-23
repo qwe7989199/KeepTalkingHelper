@@ -73,7 +73,7 @@ function renderKeypadTable() {
       img.src = `statics/img/modules/keypad/${String(idx + 1).padStart(
         2,
         "0"
-      )}.png`;
+      )}.webp`;
       img.alt = keypadSymbols[idx];
       img.title = keypadSymbols[idx];
       img.style.cursor = "pointer";
@@ -137,7 +137,7 @@ function solveKeypad() {
           `<img src="statics/img/modules/keypad/${String(idx + 1).padStart(
             2,
             "0"
-          )}.png" alt="${keypadSymbols[idx]}" title="${
+          )}.webp" alt="${keypadSymbols[idx]}" title="${
             keypadSymbols[idx]
           }" style="blackght:64px;vertical-align:middle;margin:0 4px;border-radius:4px;border:2px solid #667eea;">`
       )
