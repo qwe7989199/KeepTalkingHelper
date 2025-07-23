@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>保持沟通就没人爆炸 - 拆弹工具箱</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="container">
+      <header class="header">
+        <h1 data-i18n="mainTitle">保持沟通就没人爆炸 - 拆弹工具箱</h1>
+      </header>
+
+      <main class="main-content">
+        <div class="game-grid" id="gameGrid"></div>
+
+        <div class="game-module" id="gameModule" style="display: none">
+          <div class="module-header">
+            <button
+              class="back-btn"
+              data-i18n="backToMenu"
+              onclick="showMainMenu()"
+            >
+              ← 返回主菜单
+            </button>
+            <h2 id="moduleTitle">游戏模块</h2>
+          </div>
+          <div class="module-content" id="moduleContent"></div>
+        </div>
+      </main>
+    </div>
+
+    <!-- 主控制器 -->
+    <script src="js/main.js"></script>
+    <!-- 游戏模块 -->
+    <script src="js/basicWire.js"></script>
+    <script src="js/simonSays.js"></script>
+    <script src="js/button.js"></script>
+    <script src="js/keypad.js"></script>
+    <script src="js/whosFirst.js"></script>
+    <script src="js/memory.js"></script>
+    <script src="js/morsCode.js"></script>
+    <script src="js/complicatedWires.js"></script>
+    <script src="js/wireSequences.js"></script>
+    <script src="js/maze.js"></script>
+    <script src="js/passwords.js"></script>
+    <script src="js/knobs.js"></script>
+  </body>
+</html>
