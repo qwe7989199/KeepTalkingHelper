@@ -81,27 +81,27 @@ function calculateBasicWire(count, lastSerial, colors) {
   const blackCount = colors.filter((c) => c === "black").length;
 
   if (count === 3) {
-    if (redCount === 0) return "剪第二根线";
-    if (colors[colors.length - 1] === "white") return "剪最后一根线";
-    if (blueCount > 1) return "剪最后一根蓝色线";
-    return "剪最后一根线";
+    if (redCount === 0) return "剪【第 2 根】线";
+    if (colors[colors.length - 1] === "white") return "剪【最后一根】线";
+    if (blueCount > 1) return "剪【最后一根蓝】线";
+    return "剪【最后一根】线";
   } else if (count === 4) {
-    if (redCount > 1 && lastSerial % 2 === 1) return "剪最后一根红色线";
+    if (redCount > 1 && lastSerial % 2 === 1) return "剪【最后一根红】线";
     if (colors[colors.length - 1] === "yellow" && redCount === 0)
-      return "剪第一根线";
-    if (blueCount === 1) return "剪第一根线";
-    if (yellowCount > 1) return "剪最后一根线";
-    return "剪第二根线";
+      return "剪【第 1 根】线";
+    if (blueCount === 1) return "剪【第 1 根】线";
+    if (yellowCount > 1) return "剪【最后一根】线";
+    return "剪【第 2 根】线";
   } else if (count === 5) {
     if (colors[colors.length - 1] === "black" && lastSerial % 2 === 1)
-      return "剪第四根线";
-    if (redCount === 1 && yellowCount > 1) return "剪第一根线";
-    if (blackCount === 0) return "剪第二根线";
-    return "剪第一根线";
+      return "剪【第 4 根】线";
+    if (redCount === 1 && yellowCount > 1) return "剪【第 1 根】线";
+    if (blackCount === 0) return "剪【第 2 根】线";
+    return "剪【第 1 根】线";
   } else if (count === 6) {
-    if (yellowCount === 0 && lastSerial % 2 === 1) return "剪第三根线";
-    if (yellowCount === 1 && whiteCount > 1) return "剪第四根线";
-    if (redCount === 0) return "剪最后一根线";
-    return "剪第四根线";
+    if (yellowCount === 0 && lastSerial % 2 === 1) return "剪【第 3 根】线";
+    if (yellowCount === 1 && whiteCount > 1) return "剪【第 4 根】线";
+    if (redCount === 0) return "剪【最后一根】线";
+    return "剪【第 4 根】线";
   }
 }
