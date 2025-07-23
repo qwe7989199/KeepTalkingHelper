@@ -11,12 +11,12 @@ function initMemory() {
         <input type="number" id="memoryStage" value="1" min="1" max="5" readonly>
     </div>
     <div class="input-group">
-        <label>显示的数字:</label>
+        <label>大屏幕数字:</label>
         <input type="number" id="displayNumber" min="1" max="4" value="1">
     </div>
     
     <div class="input-group row">
-          <label>标签数字:</label>
+          <label>小标签数字:</label>
           <div class="coord-pair">
           <input type="number" id="label1" min="0" max="9" value="0">
           <input type="number" id="label2" min="0" max="9" value="0">

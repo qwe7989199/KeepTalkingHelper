@@ -622,6 +622,9 @@ function initMaze() {
     <div class="maze-layout">
       <div class="maze-inputs">
         <div class="input-group row">
+          <label>请按照 【行,列】 的顺序输入</label>
+        </div>
+        <div class="input-group row">
           <label>标记①：</label>
           <div class="coord-pair">
             <input type="number" id="sign1Row" min="1" max="6" value="2">
@@ -642,7 +645,7 @@ function initMaze() {
         <div class="input-group row">
           <label>起点：</label>
           <div class="coord-pair">
-            <input type="number" id="startRow" min="1" max="6" value="2">
+            <input type="number" id="startRow" min="1" max="6" value="1">
             <span>,</span>
             <input type="number" id="startCol" min="1" max="6" value="1">
           </div>
@@ -650,7 +653,7 @@ function initMaze() {
         <div class="input-group row">
           <label>终点：</label>
           <div class="coord-pair">
-            <input type="number" id="targetRow" min="1" max="6" value="3">
+            <input type="number" id="targetRow" min="1" max="6" value="6">
             <span>,</span>
             <input type="number" id="targetCol" min="1" max="6" value="6">
           </div>
@@ -660,16 +663,104 @@ function initMaze() {
         <button class="btn btn-secondary" onclick="clearMazeUI()">清除</button>
         <div id="mazeResult" class="result" style="display: none;"></div>
         <div id="mazeSvgContainer" class="maze-svg-wrapper"></div>
-
-
       </div>
-
     </div>
   `;
 
   Utils.hideResult("mazeResult");
 }
 
+function drawMazePath(startRow, startCol, targetRow, targetCol, path) {
+  const container = document.getElementById("mazeSvgContainer");
+  // 移除旧的svg
+  const oldSvg = container.querySelector("svg.maze-path-svg");
+  if (oldSvg) oldSvg.remove();
+
+  // 坐标转换函数
+  function cellCenter(row, col) {
+    return [(col - 1) * 50 + 25, (row - 1) * 50 + 25];
+  }
+
+  // 构造所有点
+  let points = [[startRow, startCol]];
+  let r = startRow,
+    c = startCol;
+  for (const dir of path) {
+    if (dir === "⬇") r += 1;
+    if (dir === "⬆") r -= 1;
+    if (dir === "➡") c += 1;
+    if (dir === "⬅") c -= 1;
+    points.push([r, c]);
+  }
+
+  // 创建SVG
+  const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  svg.setAttribute("width", "300");
+  svg.setAttribute("height", "300");
+  svg.classList.add("maze-path-svg");
+
+  // 定义箭头marker
+  const defs = document.createElementNS("http://www.w3.org/2000/svg", "defs");
+  defs.innerHTML = `
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="strokeWidth">
+      <polygon points="0,2 10,5 0,8" fill="rgba(44, 139, 0, 0.8)"/>
+    </marker>
+  `;
+  svg.appendChild(defs);
+
+  const [sx, sy] = cellCenter(startRow, startCol);
+  const [tx, ty] = cellCenter(targetRow, targetCol);
+  const startRect = document.createElementNS(
+    "http://www.w3.org/2000/svg",
+    "rect"
+  );
+  startRect.setAttribute("x", sx - 10);
+  startRect.setAttribute("y", sy - 10);
+  startRect.setAttribute("width", "20");
+  startRect.setAttribute("height", "20");
+  startRect.setAttribute("fill", "#fff");
+  startRect.setAttribute("stroke", "#707070");
+  startRect.setAttribute("stroke-width", "2");
+  svg.appendChild(startRect);
+
+  const endTriangle = document.createElementNS(
+    "http://www.w3.org/2000/svg",
+    "polygon"
+  );
+  const triSize = 14;
+  const triPoints = [
+    [tx, ty - triSize], // 顶点
+    [tx - triSize * 0.866, ty + triSize / 2], // 左下
+    [tx + triSize * 0.866, ty + triSize / 2], // 右下
+  ]
+    .map((p) => p.join(","))
+    .join(" ");
+  endTriangle.setAttribute("points", triPoints);
+  endTriangle.setAttribute("transform", `rotate(10, ${tx}, ${ty})`);
+  endTriangle.setAttribute("fill", "#e53e3e");
+  endTriangle.setAttribute("stroke", "#b91c1c");
+  endTriangle.setAttribute("stroke-width", "2");
+  svg.appendChild(endTriangle);
+
+  // 绘制路径
+  for (let i = 0; i < points.length - 1; i++) {
+    const [x1, y1] = cellCenter(points[i][0], points[i][1]);
+    const [x2, y2] = cellCenter(points[i + 1][0], points[i + 1][1]);
+    const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+    line.setAttribute("x1", x1);
+    line.setAttribute("y1", y1);
+    line.setAttribute("x2", x2);
+    line.setAttribute("y2", y2);
+    line.setAttribute("stroke", "rgba(44, 139, 0, 0.8)");
+    line.setAttribute("stroke-width", "2.5");
+    line.setAttribute("marker-end", "url(#arrow)");
+    svg.appendChild(line);
+  }
+
+  container.appendChild(svg);
+}
+
+// 修改 solveMazeUI 调用
 function solveMazeUI() {
   const s1r = parseInt(document.getElementById("sign1Row").value);
   const s1c = parseInt(document.getElementById("sign1Col").value);
@@ -683,6 +774,7 @@ function solveMazeUI() {
   const path = solveMaze(sr, sc, tr, tc, [s1r, s1c], [s2r, s2c]);
   if (path) {
     Utils.showResult("路径：" + path.join("   "), "mazeResult");
+    drawMazePath(sr, sc, tr, tc, path); // 叠加路径
   } else {
     Utils.showResult("未匹配到地图或未找到路径", "mazeResult");
   }
@@ -695,9 +787,9 @@ function clearMazeUI() {
   document.getElementById("sign1Col").value = 1;
   document.getElementById("sign2Row").value = 3;
   document.getElementById("sign2Col").value = 6;
-  document.getElementById("startRow").value = 2;
+  document.getElementById("startRow").value = 1;
   document.getElementById("startCol").value = 1;
-  document.getElementById("targetRow").value = 3;
+  document.getElementById("targetRow").value = 6;
   document.getElementById("targetCol").value = 6;
 }
 
