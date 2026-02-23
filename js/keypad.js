@@ -52,7 +52,9 @@ function initKeypad() {
       <span id="keypadSelectedCount" style="margin-left:12px;color:#667eea;font-weight:bold;">已选0/4</span>
       <div class="keypad-table-wrap" id="keypadTableWrap"></div>
     </div>
-    <button class="btn" onclick="solveKeypad()">解决</button>
+    <div style="margin-top:20px">
+        <button class="btn btn-secondary" onclick="initKeypad()">重置选择</button>
+    </div>
     <div id="keypadResult" class="result" style="display: none;"></div>
   `;
   selectedKeypadSymbols = []; // 重置已选符号
@@ -63,13 +65,15 @@ function initKeypad() {
 
 function renderKeypadTable(highlightCol = -1) {
   const wrap = document.getElementById("keypadTableWrap");
+  if (!wrap) return;
   wrap.innerHTML = "";
   for (let col = 0; col < 6; col++) {
     const colDiv = document.createElement("div");
     colDiv.className = "keypad-col";
     if (col === highlightCol) {
-      colDiv.style.background = "#ff9494ff"; // 淡红色
+      colDiv.style.background = "rgba(102, 126, 234, 0.1)"; // 淡紫色高亮
       colDiv.style.borderRadius = "8px";
+      colDiv.style.boxShadow = "0 0 10px rgba(102, 126, 234, 0.3)";
     }
     for (let row = 0; row < 7; row++) {
       const idx = keypadVecs[col][row] - 1;
@@ -98,25 +102,28 @@ function selectKeypadSymbol(symbol, btn) {
     selectedKeypadSymbols.length >= 4 &&
     !btn.classList.contains("selected")
   ) {
-    alert("最多只能选择4个符号！");
-    return;
+    return; // 选满了就不让选了
   }
   if (btn.classList.contains("selected")) {
     // 取消选择
     selectedKeypadSymbols = selectedKeypadSymbols.filter((s) => s !== symbol);
+    Utils.hideResult("keypadResult");
+    renderKeypadTable(-1);
   } else {
     // 选择
     selectedKeypadSymbols.push(symbol);
+    renderKeypadTable();
+    // 自动求解
+    if (selectedKeypadSymbols.length === 4) {
+        solveKeypad();
+    }
   }
-  renderKeypadTable(); // 每次操作后刷新UI
 }
 
 // 解决逻辑：找到包含这4个符号的那一列，并按该列顺序输出
 function solveKeypad() {
-  if (selectedKeypadSymbols.length !== 4) {
-    alert("请选择4个符号！");
-    return;
-  }
+  if (selectedKeypadSymbols.length !== 4) return;
+  
   // 找到包含这4个符号的列
   let foundCol = -1;
   for (let col = 0; col < 6; col++) {
@@ -138,7 +145,7 @@ function solveKeypad() {
     selectedKeypadSymbols.includes(idx)
   );
   const result =
-    "请按顺序点击：" +
+    "点击顺序: " +
     orderedSelected
       .map(
         (idx) =>
@@ -147,10 +154,10 @@ function solveKeypad() {
             "0"
           )}.webp" alt="${keypadSymbols[idx]}" title="${
             keypadSymbols[idx]
-          }" style="height:64px;vertical-align:middle;margin:0 4px;border-radius:4px;border:2px solid #667eea;">`
+          }" style="height:64px;vertical-align:middle;margin:0 8px;border-radius:8px;border:3px solid #667eea;background:white;">`
       )
-      .join("");
-  Utils.showResult(result, "keypadResult");
+      .join(" → ");
+  Utils.showResult(`<strong>${result}</strong>`, "keypadResult");
 }
 
 function updateKeypadSelectedCount() {

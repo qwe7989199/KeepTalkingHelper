@@ -147,7 +147,14 @@ const Utils = {
 // 初始化页面
 document.addEventListener("DOMContentLoaded", function () {
   renderGameGrid();
+  // 恢复上次打开的模块
+  const savedModuleId = localStorage.getItem("currentModuleId");
+  if (savedModuleId && savedModuleId !== "-1") {
+    openGameModule(parseInt(savedModuleId));
+  }
 });
+
+let currentModuleId = -1;
 
 // 渲染游戏网格
 function renderGameGrid() {
@@ -169,8 +176,22 @@ function renderGameGrid() {
   });
 }
 
+// 切换模块
+function changeModule(direction) {
+  const currentIndex = gameModules.findIndex((m) => m.id === currentModuleId);
+  let nextIndex = currentIndex + direction;
+
+  if (nextIndex < 0) nextIndex = gameModules.length - 1;
+  if (nextIndex >= gameModules.length) nextIndex = 0;
+
+  openGameModule(gameModules[nextIndex].id);
+}
+
 // 打开游戏模块
 function openGameModule(moduleId) {
+  currentModuleId = moduleId;
+  localStorage.setItem("currentModuleId", moduleId); // 记住当前模块
+  
   document.getElementById("gameGrid").style.display = "none";
   document.getElementById("gameModule").style.display = "block";
 
@@ -193,6 +214,9 @@ function openGameModule(moduleId) {
 
 // 显示主菜单
 function showMainMenu() {
+  currentModuleId = -1;
+  localStorage.removeItem("currentModuleId"); // 清除记忆
+  
   document.getElementById("gameGrid").style.display = "grid";
   document.getElementById("gameModule").style.display = "none";
   // 清理模块内容
